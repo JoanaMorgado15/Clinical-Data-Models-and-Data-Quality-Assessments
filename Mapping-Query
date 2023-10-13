@@ -1,0 +1,31 @@
+WITH diagnoses1 as (
+SELECT DISTINCT m3.SUBJECT_ID as person_id FROM mimic3_demo.DIAGNOSES_ICD m3
+),
+diagnoses2 as (
+SELECT DISTINCT d1.person_id, m3.HADM_ID as visit_occurrence_id FROM diagnoses1 d1
+JOIN mimic3_demo.DIAGNOSES_ICD m3 on d1.person_id=m3.SUBJECT_ID
+),
+CONDITION_OCCURRENCE as (
+SELECT DISTINCT d2.person_id, d2.visit_occurrence_id, m3.ICD9_CODE as condition_source_value
+FROM diagnoses 2 d2
+JOIN mimic3_demo.DIAGNOSES_ICD m3 on d2.visit_occurrence_id=m3.HADM_ID
+)
+
+SELECT * FROM CONDITION_OCCURRENCE
+
+
+For data quality and to highlight that the values in the table are the same, I decided to calculate the common commands for numeric data types in SQL: min for the minimum, max for the maximum, avg for mean, sum for sum. The mean and sum do not stay the same if some values have been wrongly transformed.
+
+
+I used the following queries:
+SELECT min(SUBJECT_ID) as min_SUBJECT_ID, max(SUBJECT_ID) as max_SUBJECT_ID, avg(SUBJECT_ID) as mean_SUBJECT_ID, sum (SUBJECT_ID) as sum_SUBJECT_ID FROM mimic3_demo.DIAGNOSES_ICD
+SELECT min(person_id) as min_person_id, max(person_id) as max_ person_id, avg(person_id) as mean_ person_id, sum (person_id) as sum_ person_id FROM CONDITION_OCCURENCE
+SELECT min(HADM_ID) as min_ HADM_ID, max(HADM_ID) as max_ HADM_ID, avg(HADM_ID) as mean_ HADM_ID, sum (HADM_ID) as sum_ HADM_ID FROM mimic3_demo.DIAGNOSES_ICD
+SELECT min(visit_occurrence_id) as min_ visit_occurrence_id, max(visit_occurrence_id) as max_ visit_occurrence_id, avg(visit_occurrence_id) as mean_ visit_occurrence_id, sum (visit_occurrence_id) as sum_ visit_occurrence_id FROM CONDITION_OCCURENCE
+
+For data quality I checked the ICD9 codes in the MIMIC-III against OMOP’s condition_source_value by computing their minimum, maximum and unique codes present.
+
+I computed the following queries:
+SELECT min(ICD9_CODE) as min_ICD9_CODE, max(ICD9_CODE) as max_ICD9_CODE, count(DISTINCT ICD9_CODE) as n_ICD9_CODE from mimic3_demo.DIAGNOSES_ICD
+
+SELECT min(condition_source_value) as min_csv, max(condition_source_value) as max_csv, count(DISTINCT condition_source_value) as n_csv from CONDITION_OCCURENCE
